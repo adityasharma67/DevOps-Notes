@@ -1,0 +1,84 @@
+UNIT 1 – DEVOPS INFRASTRUCTURE (Humanized Notes)
+
+So basically, DevOps is all about making development and operations work
+together smoothly. Instead of developers writing code and throwing it to
+ops, both collaborate to build, test, and deploy faster.
+
+1.  Introduction to Containers Containers are lightweight environments
+    where applications run with everything they need (code, libraries,
+    dependencies). Earlier, we used virtual machines, but they were
+    heavy and slow. Containers came as a faster and more efficient
+    solution.
+
+Why containers became popular: - Faster startup time - Less resource
+usage - Easy to move between systems - Perfect for DevOps workflows
+
+2.  Container Runtime Container runtime is the software that actually
+    runs containers. It manages:
+
+-   Starting and stopping containers
+-   Resource allocation
+-   Isolation
+
+Example: Docker runtime
+
+3.  Process Isolation & Namespaces Containers use namespaces to isolate
+    processes. That means:
+
+-   Each container feels like it has its own system
+-   It cannot see processes of other containers
+
+Types of namespaces: - PID (process IDs) - Network - File system - User
+
+This makes containers secure and independent.
+
+4.  Control Groups (cgroups) cgroups control how much resources a
+    container can use.
+
+They limit: - CPU usage - Memory - Disk I/O
+
+So even if one container misbehaves, it won’t crash the whole system.
+
+5.  Container Images & Layers A container image is like a blueprint. It
+    contains everything needed to run an app.
+
+Images are built in layers: - Each instruction adds a new layer - Layers
+are reused → saves space and time
+
+6.  Image Registries & Distribution Images are stored in registries.
+
+Popular registry: - Docker Hub
+
+You can: - Push images (upload) - Pull images (download)
+
+This helps in sharing applications easily.
+
+7.  Introduction to Docker Docker is the most popular container
+    platform.
+
+It allows: - Creating containers - Running applications - Managing
+images
+
+8.  Docker Architecture Docker works in client-server model:
+
+-   Docker CLI → where we type commands
+-   Docker Daemon → executes commands
+-   Docker Registry → stores images
+
+9.  Docker Components
+
+-   Container → running instance of image
+-   Image → blueprint of container
+-   Network → communication between containers
+-   Volume → storage for data
+
+10. Docker Layering & File System Docker uses layered file system:
+
+-   Read-only layers (image)
+-   Writable layer (container)
+
+This improves performance and efficiency.
+
+Conclusion: Unit 1 mainly focuses on understanding how containers work
+internally and how Docker manages them. It builds the base for further
+topics like image building and microservices.
