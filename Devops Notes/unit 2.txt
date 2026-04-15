@@ -1,143 +1,155 @@
-DOCKER IMAGE BUILDING & CONTAINER MANAGEMENT - DETAILED NOTES
 
-1. DOCKERFILE CORE CONCEPTS
+DOCKER COMPLETE DETAILED NOTES
 
-Image Layering:
-- Each instruction in Dockerfile creates a new layer.
-- Layers are cached for faster builds.
+1. IMAGE LAYERING
+- Every Dockerfile instruction creates a layer
+- Layers are cached → improves performance
+- Only changed layers are rebuilt
 
 Example:
-FROM ubuntu
-RUN apt-get update
-RUN apt-get install -y nginx
+FROM ubuntu:22.04
+RUN apt update
+RUN apt install -y nginx
 
-Build Context:
-- The directory sent to Docker daemon during build.
-- Avoid unnecessary files using .dockerignore
+2. BUILD CONTEXT & .dockerignore
+- Build context = folder sent to Docker daemon
+Command:
+docker build -t app .
 
-.dockerignore Example:
+.dockerignore:
 node_modules
 .git
 .env
+__pycache__
 
-2. DOCKERFILE BASIC INSTRUCTIONS
+3. DOCKERFILE INSTRUCTIONS (DETAILED)
 
-FROM: Base image
-FROM ubuntu:22.04
+FROM → base image
+RUN → executes command
+COPY → copies local files
+ADD → supports URL + auto extract
+CMD → default command
+ENTRYPOINT → fixed command
+WORKDIR → working directory
+ENV → env variables
+EXPOSE → documentation of ports
+VOLUME → persistent storage
 
-RUN: Execute commands
-RUN apt-get update && apt-get install -y nginx
-
-COPY: Copy files
-COPY . /app
-
-ADD: Like COPY but supports URLs and tar extraction
-ADD file.tar.gz /app
-
-CMD: Default command
-CMD ["nginx", "-g", "daemon off;"]
-
-ENTRYPOINT: Fixed command
-ENTRYPOINT ["nginx"]
-
-WORKDIR: Set working directory
+Example Full Dockerfile:
+FROM node:18
 WORKDIR /app
-
-ENV: Set environment variables
-ENV PORT=3000
-
-EXPOSE: Inform container port
+COPY package.json .
+RUN npm install
+COPY . .
 EXPOSE 3000
+CMD ["node","app.js"]
 
-VOLUME: Mount point
-VOLUME /data
+4. DOCKER BUILD PROCESS
 
-3. IMAGE CREATION
+Step-by-step:
+1. Read Dockerfile
+2. Send build context
+3. Execute instructions sequentially
+4. Cache layers
+5. Final image created
 
-Build Image:
-docker build -t myapp:1.0 .
+Commands:
+docker build -t myapp:v1 .
+docker build --no-cache -t myapp:v2 .
 
-Tag Image:
-docker tag myapp:1.0 myrepo/myapp:latest
+5. IMAGE TAGGING & VERSIONING
 
-Push Image:
-docker push myrepo/myapp:latest
+Format:
+repository:tag
 
-Pull Image:
-docker pull nginx
-
-List Images:
+Examples:
+docker tag myapp:v1 myrepo/myapp:latest
 docker images
 
-Remove Image:
-docker rmi image_id
+Best Practices:
+- latest (unstable)
+- v1.0, v1.1 (stable)
 
-Inspect Image:
+6. IMAGE INSPECTION
+
 docker inspect image_id
-
-History:
 docker history image_id
 
-4. DOCKER NETWORKING
+7. DOCKER NETWORKING (DETAILED)
 
-Bridge Network:
+Bridge:
 docker network create my_bridge
 docker run -d --network my_bridge nginx
 
-Host Network:
+Host:
 docker run -d --network host nginx
 
-Overlay Network:
+Overlay:
 docker network create -d overlay my_overlay
 
-DNS inside Docker:
-Containers can resolve names automatically.
+List networks:
+docker network ls
 
-Linking Containers:
-docker run -d --name c1 nginx
-docker run -d --name c2 --link c1 nginx
+Inspect network:
+docker network inspect my_bridge
 
-Port Mapping:
+8. DNS IN DOCKER
+- Containers resolve names via internal DNS
+
+Example:
+ping container_name
+
+9. LINKING CONTAINERS
+
+docker run -d --name db mysql
+docker run -d --name app --link db nginx
+
+10. PORT MAPPING
+
 docker run -p 8080:80 nginx
+docker run -p 127.0.0.1:5000:5000 app
 
-5. DOCKER STORAGE
+11. STORAGE (DETAILED)
 
 Volumes:
-docker volume create myvol
-docker run -v myvol:/data nginx
+docker volume create vol1
+docker run -v vol1:/data nginx
 
 Bind Mount:
-docker run -v /host/path:/container/path nginx
+docker run -v /home/user/data:/data nginx
 
-Difference:
-- Volume: Managed by Docker
-- Bind Mount: Direct host mapping
+Inspect volume:
+docker volume inspect vol1
 
-6. COPY-ON-WRITE
+12. COPY ON WRITE
 
-- Docker uses CoW filesystem.
-- Changes stored in top writable layer.
+- Base layers read-only
+- Container adds writable layer
+- Changes stored separately
 
-7. REGISTRIES
+13. REGISTRIES
 
 Docker Hub:
 docker login
-docker push username/image
+docker push username/app
 
-GitHub Container Registry:
+GHCR:
 docker login ghcr.io
 
 Private Registry:
 docker run -d -p 5000:5000 registry
 
-8. AUTHENTICATION
+Push to private:
+docker tag app localhost:5000/app
+docker push localhost:5000/app
 
-Login:
+14. AUTHENTICATION
+
 docker login
+docker logout
 
 Using Token:
-docker login -u USERNAME
+docker login -u username
 (password = token)
 
-Logout:
-docker logout
+END
