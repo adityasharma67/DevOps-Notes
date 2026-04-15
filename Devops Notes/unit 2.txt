@@ -151,5 +151,3 @@ docker logout
 Using Token:
 docker login -u username
 (password = token)
-
-END
