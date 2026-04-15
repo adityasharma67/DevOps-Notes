@@ -1,0 +1,143 @@
+DOCKER IMAGE BUILDING & CONTAINER MANAGEMENT - DETAILED NOTES
+
+1. DOCKERFILE CORE CONCEPTS
+
+Image Layering:
+- Each instruction in Dockerfile creates a new layer.
+- Layers are cached for faster builds.
+
+Example:
+FROM ubuntu
+RUN apt-get update
+RUN apt-get install -y nginx
+
+Build Context:
+- The directory sent to Docker daemon during build.
+- Avoid unnecessary files using .dockerignore
+
+.dockerignore Example:
+node_modules
+.git
+.env
+
+2. DOCKERFILE BASIC INSTRUCTIONS
+
+FROM: Base image
+FROM ubuntu:22.04
+
+RUN: Execute commands
+RUN apt-get update && apt-get install -y nginx
+
+COPY: Copy files
+COPY . /app
+
+ADD: Like COPY but supports URLs and tar extraction
+ADD file.tar.gz /app
+
+CMD: Default command
+CMD ["nginx", "-g", "daemon off;"]
+
+ENTRYPOINT: Fixed command
+ENTRYPOINT ["nginx"]
+
+WORKDIR: Set working directory
+WORKDIR /app
+
+ENV: Set environment variables
+ENV PORT=3000
+
+EXPOSE: Inform container port
+EXPOSE 3000
+
+VOLUME: Mount point
+VOLUME /data
+
+3. IMAGE CREATION
+
+Build Image:
+docker build -t myapp:1.0 .
+
+Tag Image:
+docker tag myapp:1.0 myrepo/myapp:latest
+
+Push Image:
+docker push myrepo/myapp:latest
+
+Pull Image:
+docker pull nginx
+
+List Images:
+docker images
+
+Remove Image:
+docker rmi image_id
+
+Inspect Image:
+docker inspect image_id
+
+History:
+docker history image_id
+
+4. DOCKER NETWORKING
+
+Bridge Network:
+docker network create my_bridge
+docker run -d --network my_bridge nginx
+
+Host Network:
+docker run -d --network host nginx
+
+Overlay Network:
+docker network create -d overlay my_overlay
+
+DNS inside Docker:
+Containers can resolve names automatically.
+
+Linking Containers:
+docker run -d --name c1 nginx
+docker run -d --name c2 --link c1 nginx
+
+Port Mapping:
+docker run -p 8080:80 nginx
+
+5. DOCKER STORAGE
+
+Volumes:
+docker volume create myvol
+docker run -v myvol:/data nginx
+
+Bind Mount:
+docker run -v /host/path:/container/path nginx
+
+Difference:
+- Volume: Managed by Docker
+- Bind Mount: Direct host mapping
+
+6. COPY-ON-WRITE
+
+- Docker uses CoW filesystem.
+- Changes stored in top writable layer.
+
+7. REGISTRIES
+
+Docker Hub:
+docker login
+docker push username/image
+
+GitHub Container Registry:
+docker login ghcr.io
+
+Private Registry:
+docker run -d -p 5000:5000 registry
+
+8. AUTHENTICATION
+
+Login:
+docker login
+
+Using Token:
+docker login -u USERNAME
+(password = token)
+
+Logout:
+docker logout
